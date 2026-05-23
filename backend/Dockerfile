@@ -3,8 +3,8 @@ FROM node:20-slim
 # Install Python3 (required for yt-dlp), pip, and curl
 RUN apt-get update && apt-get install -y python3 python3-pip curl && rm -rf /var/lib/apt/lists/*
 
-# Install curl-cffi globally as root and explicitly grant read/execute permissions to all users (including node user)
-RUN python3 -m pip install --break-system-packages curl-cffi && \
+# Install yt-dlp with curl-cffi globally as root and explicitly grant read/execute permissions to all users (including node user)
+RUN python3 -m pip install --break-system-packages "yt-dlp[default,curl-cffi]" && \
     chmod -R 755 /usr/local/lib/python3.*/dist-packages || true
 
 WORKDIR /app
@@ -30,5 +30,6 @@ RUN npm run build
 EXPOSE 7860
 ENV PORT=7860
 ENV NODE_ENV=production
+ENV YT_DLP_PATH=/usr/local/bin/yt-dlp
 
 CMD ["npm", "start"]
