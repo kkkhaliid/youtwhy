@@ -38,6 +38,74 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Debug endpoint to test yt-dlp binary directly
+app.get('/debug/ytdl', async (req, res) => {
+  const { exec, spawn } = require('child_process');
+  const fs = require('fs');
+  const path = require('path');
+  const { config } = require('./config');
+  
+  const query = req.query.q || '7liwa';
+  const resolvedPath = path.resolve(config.ytdlPath);
+  const exists = fs.existsSync(resolvedPath);
+  let stats = null;
+  if (exists) {
+    stats = fs.statSync(resolvedPath);
+  }
+
+  // Test running --version
+  const runVersion = () => new Promise((resolve) => {
+    exec(`"${config.ytdlPath}" --version`, (error: any, stdout: string, stderr: string) => {
+      resolve({ error: error?.message, stdout: stdout.trim(), stderr: stderr.trim() });
+    });
+  });
+
+  // Test running actual search
+  const runSearch = () => new Promise((resolve) => {
+    const args = [
+      '--skip-download',
+      '--dump-json',
+      '--js-runtimes', 'node',
+      '-4',
+      '--impersonate', 'chrome',
+      `ytsearch2:${query}`,
+      '--no-playlist',
+      '--ignore-errors',
+    ];
+    const child = spawn(config.ytdlPath, args);
+    let stdoutData = '';
+    let stderrData = '';
+    child.stdout.on('data', (d: any) => stdoutData += d.toString());
+    child.stderr.on('data', (d: any) => stderrData += d.toString());
+    child.on('close', (code: number) => {
+      resolve({ code, stdout: stdoutData, stderr: stderrData });
+    });
+  });
+
+  try {
+    const versionRes = await runVersion();
+    const searchRes = await runSearch();
+    
+    res.json({
+      ytdlPathConfig: config.ytdlPath,
+      resolvedPath,
+      exists,
+      stats,
+      version: versionRes,
+      search: searchRes,
+      env: {
+        PATH: process.env.PATH,
+        PORT: process.env.PORT,
+        NODE_ENV: process.env.NODE_ENV,
+        USER: process.env.USER,
+        PWD: process.env.PWD
+      }
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Centralized error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('[SERVER ERROR]:', err);
