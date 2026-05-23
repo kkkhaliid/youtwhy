@@ -51,7 +51,14 @@ class YtdlService {
         '--ignore-errors',
       ];
 
-      const child = spawn(this.ytdlPath, args);
+      // Explicitly pass HOME and PYTHONPATH so yt-dlp can locate curl-cffi
+      const child = spawn(this.ytdlPath, args, {
+        env: {
+          ...process.env,
+          HOME: '/home/node',
+          PYTHONPATH: '/home/node/.local/lib/python3.11/site-packages:/home/node/.local/lib/python3.12/site-packages:/home/node/.local/lib/python3.10/site-packages'
+        }
+      });
       let stdoutData = '';
       let stderrData = '';
 
@@ -129,7 +136,16 @@ class YtdlService {
       const format = 'bestaudio[ext=m4a]/bestaudio';
       const args = ['-f', format, '--js-runtimes', 'node', '-4', '--impersonate', 'chrome', '-g', url];
 
-      exec(`"${this.ytdlPath}" ${args.join(' ')}`, (error, stdout, stderr) => {
+      // Explicitly pass HOME and PYTHONPATH so yt-dlp can locate curl-cffi
+      const envOptions = {
+        env: {
+          ...process.env,
+          HOME: '/home/node',
+          PYTHONPATH: '/home/node/.local/lib/python3.11/site-packages:/home/node/.local/lib/python3.12/site-packages:/home/node/.local/lib/python3.10/site-packages'
+        }
+      };
+
+      exec(`"${this.ytdlPath}" ${args.join(' ')}`, envOptions, (error, stdout, stderr) => {
         if (error) {
           console.error(`[YTDL-SERVICE] Failed to get stream URL for ID: ${id}. Error:`, stderr);
           resolve(null);
@@ -153,7 +169,16 @@ class YtdlService {
       const url = `https://www.youtube.com/watch?v=${id}`;
       const args = ['--skip-download', '--dump-json', '--js-runtimes', 'node', '-4', '--impersonate', 'chrome', url];
 
-      exec(`"${this.ytdlPath}" ${args.join(' ')}`, (error, stdout, stderr) => {
+      // Explicitly pass HOME and PYTHONPATH so yt-dlp can locate curl-cffi
+      const envOptions = {
+        env: {
+          ...process.env,
+          HOME: '/home/node',
+          PYTHONPATH: '/home/node/.local/lib/python3.11/site-packages:/home/node/.local/lib/python3.12/site-packages:/home/node/.local/lib/python3.10/site-packages'
+        }
+      };
+
+      exec(`"${this.ytdlPath}" ${args.join(' ')}`, envOptions, (error, stdout, stderr) => {
         if (error) {
           console.error(`[YTDL-SERVICE] Failed to get metadata for ID: ${id}. Error:`, stderr);
           resolve(null);
