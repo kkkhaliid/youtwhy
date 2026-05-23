@@ -4,7 +4,6 @@ import { Play, Pause, Heart, Trash2, Plus, Clock, Download } from 'lucide-react'
 import usePlayerStore, { Track } from '../store/usePlayerStore';
 import useAuthStore from '../store/useAuthStore';
 import { useState, useEffect } from 'react';
-import { downloadTrackFile } from '../utils/api';
 
 interface TrackRowProps {
   track: Track;
@@ -21,7 +20,8 @@ export default function TrackRow({ track, index, showRemove = false }: TrackRowP
     likedTracks,
     toggleLike,
     removeFromQueue,
-  } = usePlayerStore();
+    setDownloadingTrack,
+  } = usePlayerStore() as any;
 
   const { isAuthenticated } = useAuthStore();
   const [isHovered, setIsHovered] = useState(false);
@@ -134,7 +134,7 @@ export default function TrackRow({ track, index, showRemove = false }: TrackRowP
         <button
           onClick={(e) => {
             e.stopPropagation();
-            downloadTrackFile(track.id);
+            setDownloadingTrack(track);
           }}
           className="cursor-pointer transition-all duration-200 hover:scale-105 p-1.5 rounded-lg border border-transparent text-zinc-500 hover:text-white hover:bg-zinc-900 opacity-0 group-hover:opacity-100 focus:opacity-100"
           title="Download track"

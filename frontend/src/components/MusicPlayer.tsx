@@ -10,7 +10,6 @@ import useAuthStore from '../store/useAuthStore';
 import useAudio from '../hooks/useAudio';
 import Waveform from './Waveform';
 import TrackRow from './TrackRow';
-import { downloadTrackFile } from '../utils/api';
 
 export default function MusicPlayer() {
   const {
@@ -29,7 +28,8 @@ export default function MusicPlayer() {
     toggleLike,
     queue,
     clearQueue,
-  } = usePlayerStore();
+    setDownloadingTrack,
+  } = usePlayerStore() as any;
 
   const { isAuthenticated } = useAuthStore();
   const { currentTime, duration, isBuffering, error, seek } = useAudio();
@@ -167,7 +167,7 @@ export default function MusicPlayer() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              downloadTrackFile(currentTrack.id);
+              setDownloadingTrack(currentTrack);
             }}
             className="hidden md:block cursor-pointer p-1.5 rounded-lg text-zinc-500 hover:text-white transition hover:scale-105"
             title="Download track"
@@ -476,7 +476,7 @@ export default function MusicPlayer() {
               <button 
                 onClick={(e) => {
                   e.stopPropagation();
-                  downloadTrackFile(currentTrack.id);
+                  setDownloadingTrack(currentTrack);
                 }} 
                 className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl border border-zinc-800 text-zinc-400 hover:text-white transition active:scale-95"
               >

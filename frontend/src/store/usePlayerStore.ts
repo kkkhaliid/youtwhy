@@ -22,6 +22,9 @@ interface PlayerState {
   likedTracks: Track[];
   history: Track[];
   
+  downloadingTrack: Track | null;
+  setDownloadingTrack: (track: Track | null) => void;
+  
   setTrack: (track: Track) => void;
   setQueue: (tracks: Track[]) => void;
   addToQueue: (track: Track) => void;
@@ -81,6 +84,8 @@ export const usePlayerStore = create<PlayerState>((set, get) => {
     repeat: 'none',
     likedTracks: [],
     history: [],
+    downloadingTrack: null,
+    setDownloadingTrack: (track) => set({ downloadingTrack: track }),
 
     setTrack: (track) => {
       const state = get();

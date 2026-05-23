@@ -5,6 +5,7 @@ import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
 import MusicPlayer from '@/components/MusicPlayer';
 import BottomNav from '@/components/BottomNav';
+import DownloadModal from '@/components/DownloadModal';
 import useAuthStore from '@/store/useAuthStore';
 import usePlayerStore from '@/store/usePlayerStore';
 
@@ -52,6 +53,9 @@ export default function DashboardLayout({
 
       {/* Persistent global audio control player */}
       <MusicPlayer />
+
+      {/* Persistent global download bypass modal */}
+      <DownloadModal />
 
       {/* Bottom Nav Bar for Mobile devices */}
       <BottomNav />
