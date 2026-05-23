@@ -15,7 +15,7 @@ COPY --chown=node:node package*.json ./
 USER node
 
 # Install curl-cffi for the local user so it's fully accessible during runtime
-RUN python3 -m pip install --user curl-cffi
+RUN python3 -m pip install --user --break-system-packages curl-cffi
 
 RUN npm install
 
