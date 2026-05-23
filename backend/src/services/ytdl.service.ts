@@ -40,6 +40,8 @@ class YtdlService {
         '--skip-download',
         '--dump-json',
         '--js-runtimes', 'node',
+        '-4',
+        '--impersonate', 'chrome',
         `ytsearch${limit}:${query}`,
         '--no-playlist',
         '--ignore-errors',
@@ -117,7 +119,7 @@ class YtdlService {
       const url = `https://www.youtube.com/watch?v=${id}`;
       // Prefer M4A (AAC codec) for native audio tag playing, fall back to bestaudio
       const format = 'bestaudio[ext=m4a]/bestaudio';
-      const args = ['-f', format, '--js-runtimes', 'node', '-g', url];
+      const args = ['-f', format, '--js-runtimes', 'node', '-4', '--impersonate', 'chrome', '-g', url];
 
       exec(`"${this.ytdlPath}" ${args.join(' ')}`, (error, stdout, stderr) => {
         if (error) {
@@ -141,7 +143,7 @@ class YtdlService {
   public async getTrackMetadata(id: string): Promise<Track | null> {
     return new Promise((resolve) => {
       const url = `https://www.youtube.com/watch?v=${id}`;
-      const args = ['--skip-download', '--dump-json', '--js-runtimes', 'node', url];
+      const args = ['--skip-download', '--dump-json', '--js-runtimes', 'node', '-4', '--impersonate', 'chrome', url];
 
       exec(`"${this.ytdlPath}" ${args.join(' ')}`, (error, stdout, stderr) => {
         if (error) {

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+tsbuildinfo
+waveflow.db
+waveflow.db-journal
+waveflow.db-shm
+waveflow.db-wal
+yt-dlp
+yt-dlp.exe
+.env
+.DS_Store
+Thumbs.db
