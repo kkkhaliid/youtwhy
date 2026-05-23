@@ -1,7 +1,7 @@
 FROM node:20-slim
 
-# Install Python3 (required for yt-dlp), pip, and curl
-RUN apt-get update && apt-get install -y python3 python3-pip curl && rm -rf /var/lib/apt/lists/*
+# Install Python3 (required for yt-dlp), pip, curl, ca-certificates, and openssl
+RUN apt-get update && apt-get install -y python3 python3-pip curl ca-certificates openssl && update-ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Install yt-dlp with curl-cffi globally as root and explicitly grant read/execute permissions to all users (including node user)
 RUN python3 -m pip install --break-system-packages "yt-dlp[default,curl-cffi]" && \
