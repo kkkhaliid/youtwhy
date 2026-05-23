@@ -2,10 +2,48 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Loader2, Search, Play, Plus, Sparkles, Music } from 'lucide-react';
+import { Loader2, Search, Play, Plus, Sparkles, Music, AlertTriangle, Key } from 'lucide-react';
 import api from '@/utils/api';
 import usePlayerStore, { Track } from '@/store/usePlayerStore';
 import TrackRow from '@/components/TrackRow';
+
+const DEMO_TRACKS: Track[] = [
+  {
+    id: 'f3kG_zVnSgM',
+    title: 'Resonance',
+    artist: 'HOME',
+    duration: 212,
+    thumbnail: 'https://i.ytimg.com/vi/f3kG_zVnSgM/hqdefault.jpg',
+  },
+  {
+    id: 'U7JleMh8HkY',
+    title: 'Midnight City',
+    artist: 'M83',
+    duration: 243,
+    thumbnail: 'https://i.ytimg.com/vi/U7JleMh8HkY/hqdefault.jpg',
+  },
+  {
+    id: '4xDzrJKXOOY',
+    title: 'Synthwave Radio - Chill synth beats to game/relax',
+    artist: 'Lofi Girl Synthwave',
+    duration: 0,
+    thumbnail: 'https://i.ytimg.com/vi/4xDzrJKXOOY/hqdefault.jpg',
+  },
+  {
+    id: '5qap5aO4i9A',
+    title: 'Lofi Hip Hop Radio - Beats to Relax/Study to',
+    artist: 'Lofi Girl',
+    duration: 0,
+    thumbnail: 'https://i.ytimg.com/vi/5qap5aO4i9A/hqdefault.jpg',
+  },
+  {
+    id: 'tNefFayutWw',
+    title: 'Cyberpunk Ambient Music - Neon Rain & Chill Synths',
+    artist: 'Cyber Vibes',
+    duration: 3600,
+    thumbnail: 'https://i.ytimg.com/vi/tNefFayutWw/hqdefault.jpg',
+  }
+];
 
 function SearchResults() {
   const searchParams = useSearchParams();
@@ -17,7 +55,7 @@ function SearchResults() {
   const [results, setResults] = useState<Track[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [showKeyGuide, setShowKeyGuide] = useState(false);
 
   // Sync internal state with URL query change
   useEffect(() => {
@@ -27,12 +65,13 @@ function SearchResults() {
     } else {
       setResults([]);
       setSearched(false);
+      setShowKeyGuide(false);
     }
   }, [query]);
 
   const executeSearch = async (q: string) => {
     setLoading(true);
-    setError(null);
+    setShowKeyGuide(false);
     setSearched(true);
     try {
       // 1. Try querying our Hugging Face backend first
@@ -43,45 +82,11 @@ function SearchResults() {
       }
       throw new Error("No backend tracks returned");
     } catch (err: any) {
-      console.warn('Backend search grid blocked or empty. Launching client-side failover search...', err.message);
+      console.warn('Backend search grid blocked. Activating client demo mode & setup guide...', err.message);
       
-      // 2. Client-side Invidious failover (executes from the user's browser, bypassing HF block!)
-      const instances = [
-        'yewtu.be',
-        'invidious.io',
-        'inv.snopyta.org',
-        'inv.tux.im',
-        'invidious.flokinet.to'
-      ];
-      
-      for (const instance of instances) {
-        try {
-          console.log(`[FAILOVER-SEARCH] Querying client-side grid via instance: ${instance}`);
-          const res = await fetch(`https://${instance}/api/v1/search?q=${encodeURIComponent(q)}&type=video&limit=20`, {
-            signal: AbortSignal.timeout(6000) // 6 seconds timeout per instance
-          });
-          if (!res.ok) continue;
-          
-          const body = await res.json();
-          if (Array.isArray(body) && body.length > 0) {
-            const mappedTracks: Track[] = body.slice(0, 20).map((item: any) => ({
-              id: item.videoId,
-              title: item.title || 'Unknown Title',
-              artist: item.author || 'Unknown Artist',
-              duration: item.lengthSeconds || 180,
-              thumbnail: item.videoThumbnails?.[0]?.url || `https://i.ytimg.com/vi/${item.videoId}/hqdefault.jpg`,
-            }));
-            
-            console.log(`[FAILOVER-SEARCH] Client-side fallback search succeeded on instance: ${instance}`);
-            setResults(mappedTracks);
-            return;
-          }
-        } catch (e: any) {
-          console.warn(`[FAILOVER-SEARCH] Instance ${instance} failed:`, e.message);
-        }
-      }
-      
-      setError('Failed to fetch search results. Please try again or specify keywords.');
+      // Load premium demo tracks so they can test playback immediately!
+      setResults(DEMO_TRACKS);
+      setShowKeyGuide(true);
     } finally {
       setLoading(false);
     }
@@ -147,15 +152,70 @@ function SearchResults() {
             Searching network grid...
           </p>
         </div>
-      ) : error ? (
-        <div className="p-6 rounded-xl bg-zinc-950 border border-zinc-900 text-center max-w-md mx-auto">
-          <p className="text-xs text-zinc-400 font-semibold">{error}</p>
-          <button
-            onClick={() => executeSearch(query)}
-            className="mt-4 px-4 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-white text-xs font-bold transition cursor-pointer"
-          >
-            Retry Search
-          </button>
+      ) : showKeyGuide ? (
+        <div className="space-y-6">
+          {/* Key Activation Guide Panel */}
+          <div className="p-5 rounded-xl bg-zinc-950/60 border border-red-950/40 text-left max-w-xl mx-auto space-y-4">
+            <div className="flex items-center gap-2.5 text-red-500/90">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <h3 className="text-xs font-bold font-mono uppercase tracking-wider">Cloud Network Access Offline</h3>
+            </div>
+            
+            <p className="text-[10px] text-zinc-450 leading-relaxed font-sans">
+              Google blocks standard cloud hosting IPs from scraping search results directly. To unlock unlimited, instant search with zero restrictions, configure a **free Google YouTube API Key** in your Hugging Face Space:
+            </p>
+
+            <div className="bg-black/40 rounded-lg p-3.5 border border-zinc-900 font-mono text-[9px] text-zinc-400 space-y-2.5">
+              <div className="flex items-start gap-2">
+                <span className="text-zinc-500">1.</span>
+                <span>Go to <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noreferrer" className="text-white hover:underline font-bold">Google Cloud Console</a> and enable **YouTube Data API v3** (100% Free).</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-zinc-500">2.</span>
+                <span>Go to the **Credentials** page, click **Create Credentials**, and select **API Key**.</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-zinc-500">3.</span>
+                <span>Open your <a href="https://huggingface.co/spaces/makhalidsh/youtwhy/settings" target="_blank" rel="noreferrer" className="text-white hover:underline font-bold">Hugging Face Space Settings</a>, scroll to **Variables and secrets**, and add a secret named `YOUTUBE_API_KEY` with your key value.</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 text-zinc-500 text-[9px] font-mono uppercase pt-1">
+              <Key className="w-3.5 h-3.5" />
+              <span>Loaded Premium Local Beats below for instant playback testing:</span>
+            </div>
+          </div>
+
+          {/* Render Demo Tracks */}
+          {results.length > 0 && (
+            <div className="space-y-4 max-w-2xl mx-auto">
+              <div className="flex items-center justify-between border-b border-zinc-900 pb-2">
+                <span className="text-[9px] text-zinc-500 font-mono uppercase tracking-wider">
+                  Test Songs ({results.length})
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handlePlayAll}
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white hover:bg-zinc-200 text-black text-[9px] font-bold uppercase tracking-wider transition active:scale-95 cursor-pointer shadow-sm"
+                  >
+                    <Play className="w-2.5 h-2.5 fill-current" /> Play
+                  </button>
+                  <button
+                    onClick={handleAddAllToQueue}
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 text-zinc-350 text-[9px] font-bold uppercase tracking-wider transition active:scale-95 cursor-pointer"
+                  >
+                    <Plus className="w-2.5 h-2.5" /> Queue
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 select-none">
+                {results.map((track, idx) => (
+                  <TrackRow key={track.id} track={track} index={idx} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       ) : results.length > 0 ? (
         <div className="space-y-4">
@@ -191,7 +251,7 @@ function SearchResults() {
         <div className="py-16 text-center max-w-md mx-auto flex flex-col items-center justify-center bg-zinc-950 border border-zinc-900/60 rounded-xl p-8">
           <Music className="w-8 h-8 text-zinc-800 mb-3" />
           <h3 className="text-xs font-bold text-zinc-300">No Tracks Found</h3>
-          <p className="text-[10px] text-zinc-550 mt-1 max-w-[250px] leading-relaxed">
+          <p className="text-[10px] text-zinc-555 mt-1 max-w-[250px] leading-relaxed">
             We couldn&apos;t find any tracks matching &quot;{query}&quot;. Try adjusting your keywords.
           </p>
         </div>
