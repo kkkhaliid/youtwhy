@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search, Library, Heart, History, LogIn, LogOut, Sparkles, Music } from 'lucide-react';
+import { Home, Search, Library, Heart, History, LogIn, LogOut, Sparkles, Music, Star } from 'lucide-react';
 import useAuthStore from '../store/useAuthStore';
 import usePlayerStore from '../store/usePlayerStore';
+import Sticker from './Sticker';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -34,23 +35,23 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 h-screen hidden md:flex flex-col fixed left-0 top-0 bg-[#0a0a0a] border-r border-zinc-900 p-6 z-20 select-none">
-      {/* Brand Logo */}
+    <aside className="w-64 h-screen hidden md:flex flex-col fixed left-0 top-0 bg-[#000000] border-r border-zinc-900 p-6 z-20 select-none">
+      {/* Brand Logo with curved details */}
       <div className="flex items-center gap-3 mb-8 px-2">
-        <div className="relative flex items-center justify-center w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 shadow-sm">
-          <Music className="w-5 h-5 text-white" />
+        <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 shadow-sm transition-transform duration-350 hover:scale-105">
+          <Music className="w-5 h-5 text-neon-green" />
         </div>
         <div>
-          <span className="font-bold text-lg tracking-tight text-white flex items-center gap-1">
-            Wave<span className="text-zinc-400">Flow</span>
+          <span className="font-black text-lg tracking-tight text-white flex items-center gap-1">
+            Wave<span className="text-zinc-400 font-medium">Flow</span>
           </span>
-          <span className="text-[8px] font-mono uppercase tracking-widest text-zinc-500 block -mt-1">Monochrome</span>
+          <span className="text-[7.5px] font-mono font-extrabold uppercase tracking-widest text-neon-green block -mt-1 drop-shadow-[0_0_8px_rgba(61,253,62,0.4)]">Monochrome</span>
         </div>
       </div>
 
       {/* Main Navigation */}
-      <nav className="space-y-1 mb-8">
-        <span className="px-3 text-[9px] font-mono uppercase tracking-wider text-zinc-500 block mb-3">Discover</span>
+      <nav className="space-y-1.5 mb-8">
+        <span className="px-3 text-[9px] font-mono font-extrabold uppercase tracking-wider text-zinc-550 block mb-3">Discover</span>
         {mainNav.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -58,13 +59,13 @@ export default function Sidebar() {
             <Link
               key={item.name}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 group ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 group border ${
                 isActive
-                  ? 'bg-zinc-900 border-l-2 border-white text-white font-semibold'
-                  : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+                  ? 'bg-zinc-900 border-zinc-800 border-l-4 border-l-neon-green text-neon-green font-bold shadow-md shadow-neon-green/5'
+                  : 'text-zinc-400 border-transparent hover:text-white hover:bg-zinc-900 hover:border-zinc-900'
               }`}
             >
-              <Icon className={`w-4 h-4 transition-transform duration-200 group-hover:scale-105 ${isActive ? 'text-white' : 'text-zinc-400 group-hover:text-white'}`} />
+              <Icon className={`w-4 h-4 transition-transform duration-200 group-hover:scale-105 ${isActive ? 'text-neon-green' : 'text-zinc-400 group-hover:text-white'}`} />
               {item.name}
             </Link>
           );
@@ -72,21 +73,33 @@ export default function Sidebar() {
       </nav>
 
       {/* My Space */}
-      <div className="space-y-1 mb-8">
-        <span className="px-3 text-[9px] font-mono uppercase tracking-wider text-zinc-500 block mb-3">Your Space</span>
+      <div className="space-y-1.5 mb-8">
+        <span className="px-3 text-[9px] font-mono font-extrabold uppercase tracking-wider text-zinc-550 block mb-3">Your Space</span>
         {subNav.map((item) => {
           const Icon = item.icon;
+          const isActive = pathname === item.href;
           return (
             <Link
               key={item.name}
               href={item.href}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all duration-200 group"
+              className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all duration-200 group border border-transparent hover:border-zinc-900"
             >
               <Icon className="w-4 h-4 text-zinc-400 group-hover:text-white group-hover:scale-105 transition-all" />
               {item.name}
             </Link>
           );
         })}
+      </div>
+
+      {/* Decorative Rotating Art Sticker Badge in Left Drawer */}
+      <div className="flex justify-center my-4 py-2 border-y border-zinc-900/60">
+        <Sticker 
+          text="• WAVEFLOW • DISCOVER • PREMIUM • MONOCHROME " 
+          id="sidebar-sticker"
+          color="text-neon-green"
+          size="w-24 h-24"
+          icon={Star}
+        />
       </div>
 
       {/* User Session Slot */}

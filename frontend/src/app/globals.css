@@ -6,6 +6,10 @@
   --color-mono-gray: #121212;
   --color-mono-gray-light: #1e1e1e;
   --color-mono-border: #27272a;
+  --color-neon-green: #3dfd3e;
+  --color-sticker-purple: #8b5cf6;
+  --color-sticker-blue: #06b6d4;
+  --color-sticker-pink: #ec4899;
 }
 
 :root {
@@ -136,11 +140,46 @@ input[type="range"]::-moz-range-thumb {
 }
 
 ::selection {
-  background: #ffffff;
+  background: #3dfd3e;
   color: #000000;
 }
 
 ::-moz-selection {
-  background: #ffffff;
+  background: #3dfd3e;
   color: #000000;
+}
+
+/* Wavy / Organic Curves from Mockup */
+.curve-card {
+  border-radius: 2rem;
+}
+.curve-card-top {
+  border-radius: 2rem 2rem 0 0;
+}
+.curve-card-bottom {
+  border-radius: 0 0 2rem 2rem;
+}
+
+/* Ambient purple-blue grid mesh background from mockup */
+.bg-cyber-mesh {
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.06) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(236, 72, 153, 0.02) 0px, transparent 50%);
+  background-color: #000000;
+}
+
+/* Slow spin for retro art sticker rotation */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 22s linear infinite;
+}
+
+/* Extra organic curved headers */
+.organic-header {
+  border-radius: 0 0 2.5rem 2.5rem;
 }
