@@ -3,6 +3,10 @@ FROM node:20-slim
 # Install Python3 (required for yt-dlp), pip, and curl
 RUN apt-get update && apt-get install -y python3 python3-pip curl && rm -rf /var/lib/apt/lists/*
 
+# Install curl-cffi globally as root and explicitly grant read/execute permissions to all users (including node user)
+RUN python3 -m pip install --break-system-packages curl-cffi && \
+    chmod -R 755 /usr/local/lib/python3.*/dist-packages || true
+
 WORKDIR /app
 
 # Change ownership of the workdir to the non-root 'node' user (UID 1000) expected by Hugging Face
@@ -13,9 +17,6 @@ COPY --chown=node:node package*.json ./
 
 # Switch to non-root user before running npm install and commands
 USER node
-
-# Install curl-cffi for the local user so it's fully accessible during runtime
-RUN python3 -m pip install --user --break-system-packages curl-cffi
 
 RUN npm install
 
