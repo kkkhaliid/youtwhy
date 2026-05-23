@@ -5,14 +5,21 @@ RUN apt-get update && apt-get install -y python3 curl && rm -rf /var/lib/apt/lis
 
 WORKDIR /app
 
-# Copy package files and install dependencies
-COPY package*.json ./
+# Change ownership of the workdir to the non-root 'node' user (UID 1000) expected by Hugging Face
+RUN chown -R node:node /app
+
+# Copy package files with correct node ownership
+COPY --chown=node:node package*.json ./
+
+# Switch to non-root user before running npm install and commands
+USER node
+
 RUN npm install
 
-# Copy source code and build script
-COPY . .
+# Copy application source code with correct node ownership
+COPY --chown=node:node . .
 
-# Run the build script (which compiles TS and downloads yt-dlp)
+# Run the build script (which compiles TS and downloads yt-dlp to /app/yt-dlp)
 RUN npm run build
 
 # Expose port 7860 (Hugging Face Spaces expects port 7860 by default)
