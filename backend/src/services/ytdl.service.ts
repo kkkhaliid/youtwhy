@@ -56,7 +56,7 @@ class YtdlService {
         env: {
           ...process.env,
           HOME: '/home/node',
-          PYTHONPATH: '/home/node/.local/lib/python3.11/site-packages:/home/node/.local/lib/python3.12/site-packages:/home/node/.local/lib/python3.10/site-packages'
+          PYTHONPATH: '/usr/local/lib/python3.11/dist-packages:/usr/local/lib/python3.12/dist-packages:/usr/local/lib/python3.10/dist-packages:/usr/local/lib/python3/dist-packages:/home/node/.local/lib/python3.11/site-packages:/home/node/.local/lib/python3.12/site-packages:/home/node/.local/lib/python3.10/site-packages'
         }
       });
       let stdoutData = '';
@@ -141,7 +141,7 @@ class YtdlService {
         env: {
           ...process.env,
           HOME: '/home/node',
-          PYTHONPATH: '/home/node/.local/lib/python3.11/site-packages:/home/node/.local/lib/python3.12/site-packages:/home/node/.local/lib/python3.10/site-packages'
+          PYTHONPATH: '/usr/local/lib/python3.11/dist-packages:/usr/local/lib/python3.12/dist-packages:/usr/local/lib/python3.10/dist-packages:/usr/local/lib/python3/dist-packages:/home/node/.local/lib/python3.11/site-packages:/home/node/.local/lib/python3.12/site-packages:/home/node/.local/lib/python3.10/site-packages'
         }
       };
 
@@ -174,7 +174,7 @@ class YtdlService {
         env: {
           ...process.env,
           HOME: '/home/node',
-          PYTHONPATH: '/home/node/.local/lib/python3.11/site-packages:/home/node/.local/lib/python3.12/site-packages:/home/node/.local/lib/python3.10/site-packages'
+          PYTHONPATH: '/usr/local/lib/python3.11/dist-packages:/usr/local/lib/python3.12/dist-packages:/usr/local/lib/python3.10/dist-packages:/usr/local/lib/python3/dist-packages:/home/node/.local/lib/python3.11/site-packages:/home/node/.local/lib/python3.12/site-packages:/home/node/.local/lib/python3.10/site-packages'
         }
       };
 
