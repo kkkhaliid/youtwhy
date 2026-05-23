@@ -153,7 +153,7 @@ class MusicController {
     try {
       const { execSync } = require('child_process');
       const stdout = execSync(cmd, {
-        timeout: 5000,
+        timeout: 30000,
         env: {
           ...process.env,
           HOME: '/home/node',
