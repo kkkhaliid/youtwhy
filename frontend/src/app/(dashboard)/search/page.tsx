@@ -35,11 +35,53 @@ function SearchResults() {
     setError(null);
     setSearched(true);
     try {
+      // 1. Try querying our Hugging Face backend first
       const response = await api.get(`/music/search?q=${encodeURIComponent(q)}`);
-      setResults(response.data);
+      if (response.data && response.data.length > 0) {
+        setResults(response.data);
+        return;
+      }
+      throw new Error("No backend tracks returned");
     } catch (err: any) {
-      console.error('Search query failure:', err);
-      setError('Failed to fetch search results. Please try again.');
+      console.warn('Backend search grid blocked or empty. Launching client-side failover search...', err.message);
+      
+      // 2. Client-side Invidious failover (executes from the user's browser, bypassing HF block!)
+      const instances = [
+        'yewtu.be',
+        'invidious.io',
+        'inv.snopyta.org',
+        'inv.tux.im',
+        'invidious.flokinet.to'
+      ];
+      
+      for (const instance of instances) {
+        try {
+          console.log(`[FAILOVER-SEARCH] Querying client-side grid via instance: ${instance}`);
+          const res = await fetch(`https://${instance}/api/v1/search?q=${encodeURIComponent(q)}&type=video&limit=20`, {
+            signal: AbortSignal.timeout(6000) // 6 seconds timeout per instance
+          });
+          if (!res.ok) continue;
+          
+          const body = await res.json();
+          if (Array.isArray(body) && body.length > 0) {
+            const mappedTracks: Track[] = body.slice(0, 20).map((item: any) => ({
+              id: item.videoId,
+              title: item.title || 'Unknown Title',
+              artist: item.author || 'Unknown Artist',
+              duration: item.lengthSeconds || 180,
+              thumbnail: item.videoThumbnails?.[0]?.url || `https://i.ytimg.com/vi/${item.videoId}/hqdefault.jpg`,
+            }));
+            
+            console.log(`[FAILOVER-SEARCH] Client-side fallback search succeeded on instance: ${instance}`);
+            setResults(mappedTracks);
+            return;
+          }
+        } catch (e: any) {
+          console.warn(`[FAILOVER-SEARCH] Instance ${instance} failed:`, e.message);
+        }
+      }
+      
+      setError('Failed to fetch search results. Please try again or specify keywords.');
     } finally {
       setLoading(false);
     }
