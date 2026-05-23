@@ -60,6 +60,20 @@ app.get('/debug/ytdl', async (req, res) => {
     });
   });
 
+  // Test python importing curl_cffi
+  const testPythonImport = () => new Promise((resolve) => {
+    exec(`python3 -c "import curl_cffi; print('curl_cffi version:', curl_cffi.__version__)"`, (error: any, stdout: string, stderr: string) => {
+      resolve({ error: error?.message, stdout: stdout.trim(), stderr: stderr.trim() });
+    });
+  });
+
+  // Test running list impersonate targets
+  const runListTargets = () => new Promise((resolve) => {
+    exec(`"${config.ytdlPath}" --list-impersonate-targets`, (error: any, stdout: string, stderr: string) => {
+      resolve({ error: error?.message, stdout: stdout.trim(), stderr: stderr.trim() });
+    });
+  });
+
   // Test running actual search
   const runSearch = () => new Promise((resolve) => {
     const args = [
@@ -84,6 +98,8 @@ app.get('/debug/ytdl', async (req, res) => {
 
   try {
     const versionRes = await runVersion();
+    const importRes = await testPythonImport();
+    const listTargetsRes = await runListTargets();
     const searchRes = await runSearch();
     
     res.json({
@@ -92,6 +108,8 @@ app.get('/debug/ytdl', async (req, res) => {
       exists,
       stats,
       version: versionRes,
+      pythonImport: importRes,
+      listTargets: listTargetsRes,
       search: searchRes,
       env: {
         PATH: process.env.PATH,
