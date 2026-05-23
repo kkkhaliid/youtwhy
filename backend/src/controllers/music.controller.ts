@@ -46,6 +46,9 @@ class MusicController {
   public search = async (req: Request, res: Response): Promise<void> => {
     const query = req.query.q as string;
     const limit = parseInt(req.query.limit as string || '20', 10);
+    const debug = req.query.debug === 'true';
+
+    console.log(`[MUSIC] Search request received. Query: "${query}", Limit: ${limit}`);
 
     if (!query) {
       res.status(400).json({ error: 'Search query is required' });
@@ -54,10 +57,24 @@ class MusicController {
 
     try {
       const tracks = await ytdlService.search(query, limit);
+      console.log(`[MUSIC] Search query: "${query}" returned ${tracks.length} tracks.`);
+      
+      if (debug) {
+        res.json({
+          query,
+          limit,
+          tracksCount: tracks.length,
+          tracks,
+          ytdlPath: (ytdlService as any).ytdlPath,
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+      
       res.json(tracks);
     } catch (error: any) {
       console.error('[MUSIC] Search error:', error);
-      res.status(500).json({ error: 'Internal server error while searching' });
+      res.status(500).json({ error: 'Internal server error while searching', details: error.message });
     }
   };
 
