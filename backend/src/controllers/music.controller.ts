@@ -145,6 +145,33 @@ class MusicController {
       res.status(500).json({ error: 'Internal server error fetching recommendations' });
     }
   };
+
+  // Diagnostic endpoint to test yt-dlp binary and external dependencies directly
+  public testYtdl = async (req: Request, res: Response): Promise<void> => {
+    const cmd = req.query.cmd as string || 'yt-dlp --version';
+    console.log(`[TEST-YTDL] Diagnostic request received. Cmd: "${cmd}"`);
+    try {
+      const { execSync } = require('child_process');
+      const stdout = execSync(cmd, {
+        timeout: 5000,
+        env: {
+          ...process.env,
+          HOME: '/home/node',
+          PYTHONPATH: '/usr/local/lib/python3.11/dist-packages:/usr/local/lib/python3.12/dist-packages:/usr/local/lib/python3.10/dist-packages:/usr/local/lib/python3/dist-packages:/home/node/.local/lib/python3.11/site-packages:/home/node/.local/lib/python3.12/site-packages:/home/node/.local/lib/python3.10/site-packages'
+        }
+      }).toString();
+      
+      res.json({ cmd, success: true, stdout });
+    } catch (e: any) {
+      res.status(500).json({
+        cmd,
+        success: false,
+        error: e.message,
+        stderr: e.stderr?.toString(),
+        stdout: e.stdout?.toString()
+      });
+    }
+  };
 }
 
 export const musicController = new MusicController();

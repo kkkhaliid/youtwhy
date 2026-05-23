@@ -7,6 +7,7 @@ const router = Router();
 
 // Music search and metadata lookup
 router.get('/search', musicController.search);
+router.get('/test-ytdl', musicController.testYtdl);
 router.get('/recommendations', musicController.getRecommendations);
 router.get('/tracks/:id', musicController.getTrack);
 
