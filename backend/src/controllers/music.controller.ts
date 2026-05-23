@@ -60,12 +60,21 @@ class MusicController {
       console.log(`[MUSIC] Search query: "${query}" returned ${tracks.length} tracks.`);
       
       if (debug) {
+        let curlCffiPath = 'Not found';
+        try {
+          const { execSync } = require('child_process');
+          curlCffiPath = execSync('python3 -c "import curl_cffi; print(curl_cffi.__file__)"').toString().trim();
+        } catch (e: any) {
+          curlCffiPath = 'Error: ' + e.message;
+        }
+
         res.json({
           query,
           limit,
           tracksCount: tracks.length,
           tracks,
           ytdlPath: (ytdlService as any).ytdlPath,
+          curlCffiPath,
           lastError: ytdlService.lastError,
           lastStdout: ytdlService.lastStdout,
           lastStderr: ytdlService.lastStderr,
