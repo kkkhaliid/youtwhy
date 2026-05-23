@@ -1,7 +1,10 @@
 FROM node:20-slim
 
-# Install Python3 (required for yt-dlp) and curl
-RUN apt-get update && apt-get install -y python3 curl && rm -rf /var/lib/apt/lists/*
+# Install Python3 (required for yt-dlp), pip, and curl
+RUN apt-get update && apt-get install -y python3 python3-pip curl && rm -rf /var/lib/apt/lists/*
+
+# Install curl-cffi globally so yt-dlp can use it for browser impersonation
+RUN python3 -m pip install --break-system-packages curl-cffi
 
 WORKDIR /app
 
