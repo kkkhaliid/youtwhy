@@ -97,6 +97,8 @@ app.get('/debug/ytdl', async (req, res) => {
   });
 
   try {
+    const { ytdlService } = require('./services/ytdl.service');
+    const dbSearchRes = await ytdlService.search(query, 5);
     const versionRes = await runVersion();
     const importRes = await testPythonImport();
     const listTargetsRes = await runListTargets();
@@ -111,6 +113,7 @@ app.get('/debug/ytdl', async (req, res) => {
       pythonImport: importRes,
       listTargets: listTargetsRes,
       search: searchRes,
+      internalSearch: dbSearchRes,
       env: {
         PATH: process.env.PATH,
         PORT: process.env.PORT,
