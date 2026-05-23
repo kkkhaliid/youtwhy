@@ -67,7 +67,16 @@ class StreamController {
         console.log(`[STREAM] Fetching new stream URL from yt-dlp for ID: ${id}`);
         const freshUrl = await ytdlService.getStreamUrl(id);
         if (!freshUrl) {
-          res.status(404).json({ error: 'Track audio stream not found' });
+          const fallbackInstances = [
+            'inv.nadeko.net',
+            'yewtu.be',
+            'invidious.nerdvpn.de',
+            'invidious.f5.si'
+          ];
+          const instance = fallbackInstances[Math.floor(Math.random() * fallbackInstances.length)];
+          const fallbackUrl = `https://${instance}/latest_version?id=${id}&itag=140&local=true`;
+          console.log(`[STREAM] yt-dlp failed due to YouTube bot block on Hugging Face. Redirecting browser client to: ${fallbackUrl}`);
+          res.redirect(fallbackUrl);
           return;
         }
         streamUrl = freshUrl;
