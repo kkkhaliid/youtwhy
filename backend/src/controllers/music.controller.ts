@@ -66,6 +66,9 @@ class MusicController {
           tracksCount: tracks.length,
           tracks,
           ytdlPath: (ytdlService as any).ytdlPath,
+          lastError: ytdlService.lastError,
+          lastStdout: ytdlService.lastStdout,
+          lastStderr: ytdlService.lastStderr,
           timestamp: new Date().toISOString()
         });
         return;

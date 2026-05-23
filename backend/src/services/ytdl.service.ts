@@ -12,6 +12,10 @@ export interface Track {
 
 class YtdlService {
   private ytdlPath = config.ytdlPath;
+  
+  public lastError: string = '';
+  public lastStdout: string = '';
+  public lastStderr: string = '';
 
   // Search YouTube for tracks
   public async search(query: string, limit: number = 20): Promise<Track[]> {
@@ -60,6 +64,10 @@ class YtdlService {
       });
 
       child.on('close', async (code) => {
+        this.lastError = code !== 0 ? `Failed with exit code ${code}` : '';
+        this.lastStdout = stdoutData;
+        this.lastStderr = stderrData;
+
         if (code !== 0 && stdoutData.trim() === '') {
           console.error(`[YTDL-SERVICE] yt-dlp search process failed with code ${code}. Error: ${stderrData}`);
           resolve([]);
