@@ -1,0 +1,34 @@
+# Dependencies
+**/node_modules/
+**/.pnp
+**/.pnp.js
+
+# Next.js Build Output
+frontend/.next/
+frontend/out/
+
+# TypeScript Build Output
+backend/dist/
+backend/tsbuildinfo
+frontend/tsconfig.tsbuildinfo
+
+# SQLite Database & Cache
+backend/waveflow.db
+backend/waveflow.db-journal
+backend/waveflow.db-shm
+backend/waveflow.db-wal
+
+# Local Executables & Downloads
+backend/yt-dlp
+backend/yt-dlp.exe
+
+# Environment Variables & Secrets
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+
+# OS Files
+.DS_Store
+Thumbs.db
