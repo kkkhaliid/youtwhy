@@ -52,7 +52,7 @@ export default function MusicPlayer() {
 
   if (!currentTrack) return null;
 
-  const isLiked = likedTracks.some((t) => t.id === currentTrack.id);
+  const isLiked = likedTracks.some((t: any) => t.id === currentTrack.id);
 
   const formatTime = (seconds: number) => {
     if (isNaN(seconds) || seconds === null) return '0:00';
@@ -539,7 +539,7 @@ export default function MusicPlayer() {
                 <p className="text-[10px] text-zinc-600 mt-1 max-w-[180px]">Add songs from search page to keep the flow alive.</p>
               </div>
             ) : (
-              queue.map((track, idx) => (
+              queue.map((track: any, idx: number) => (
                 <TrackRow key={`${track.id}-${idx}`} track={track} index={idx} showRemove={true} />
               ))
             )}

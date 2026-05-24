@@ -27,7 +27,7 @@ export default function TrackRow({ track, index, showRemove = false }: TrackRowP
   const [isHovered, setIsHovered] = useState(false);
 
   const isCurrent = currentTrack?.id === track.id;
-  const isLiked = likedTracks.some((t) => t.id === track.id);
+  const isLiked = likedTracks.some((t: any) => t.id === track.id);
 
   const formatDuration = (seconds: number) => {
     if (!seconds) return '--:--';
